@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "log.h"
-#include "arff.h"
 
 // char** pesquisaCategorias(atributo* arff, char charGuia, int numAtributos){
 //     switch(charGuia){
@@ -42,7 +41,7 @@ char* coletaLinhaDeDados(FILE* arff){
     while(percorre[0] == '\n'){
         fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
     }
-    return percorre;
+    return strdup(percorre);
 }
 
 char** separarDados(char* linhaDados, int numAtributos){
@@ -64,12 +63,27 @@ char** separarDados(char* linhaDados, int numAtributos){
     return dados;
 }
 
-void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
-    FILE* arq = fopen("R_ATAQUES.txt", "w");
-    if(!arq){
-        perror("Falha ao abrir o arquivo de relatório de ataques\n");
-        exit(1);
+unsigned int verificaPosicaoAtributo(atributo* listaDeAtributos, int numAtributos, char* atributo){
+    for(unsigned int i = 0; i < numAtributos; i++){
+        if(strcmp(listaDeAtributos[i].rotulo, atributo) == 0){
+            return i;
+        }
     }
+    printf("Atributo %s não encontrado, fechando a execução\n", atributo);
+    perror("Atributo não encontrado na ao verificar a posição deste.\n");
+    exit(1);
+}
+
+unsigned int contaCategorias(char** categorias){
+    unsigned int i = 0;
+    char** copiaCategorias = categorias;
+    while(copiaCategorias[i] != NULL){
+        i++;
+    }
+    return i;
+}
+
+void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
     char** dados = NULL;
     char* linhaDados = malloc(sizeof(char)*LINE_SIZE_DADOS+1);
     if(!linhaDados){
@@ -81,8 +95,8 @@ void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
     unsigned int copiaNumeroDeCategorias = 0;
     unsigned int* numeroDeOcorrencias = NULL;
 
-    posicaoAtributo = verificaPosicaoAtributo(arff, "PKT_CLASS");
-    numeroDeCategorias = contaCategorias(vetorAtributos, posicaoAtributo);
+    posicaoAtributo = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
+    numeroDeCategorias = contaCategorias(vetorAtributos[posicaoAtributo].categorias);
     copiaNumeroDeCategorias = numeroDeCategorias;
     numeroDeOcorrencias = malloc(sizeof(unsigned int)*numeroDeCategorias);
     if(!numeroDeOcorrencias){
@@ -93,19 +107,26 @@ void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
         linhaDados = coletaLinhaDeDados(arff);
         dados = separarDados(linhaDados, numAtributos);
         while(copiaNumeroDeCategorias > 0){
-
+            if(strcmp(dados[posicaoAtributo], vetorAtributos[posicaoAtributo].categorias[numeroDeCategorias-1]) == 0){
+                numeroDeOcorrencias[numeroDeCategorias-1]++;
+                break;
+            }
         }
         copiaNumeroDeCategorias = numeroDeCategorias;
-        // if(strcmp(dados[posicaoAtributo], "Normal") != 0){
-        //     while(numeroDeCategorias > 0){
-        //         if(strcmp(dados[posicaoAtributo], vetorAtributos[posicaoAtributo].categorias[numeroDeCategorias-1]) == 0){
-        //             fprintf(arq, "%s;%d\n", vetorAtributos[posicaoAtributo].categorias[numeroDeCategorias-1], numDeOcorrencias[numeroDeCategorias-1]);
-        //         }
-        //         numeroDeCategorias--;
-        //     }
-        // }
     }
-    
+    gerarRelatorioDeAtaque(vetorAtributos[posicaoAtributo].categorias, numeroDeOcorrencias, numeroDeCategorias);
+}
+
+void gerarRelatorioDeAtaque(char** categorias, unsigned int* numeroDeOcorrencias, unsigned int numeroDeCategorias){
+    FILE* arq = fopen("R_ATAQUES.txt", "w");
+    if(!arq){
+        perror("Falha ao abrir o arquivo de relatório de ataques\n");
+        exit(1);
+    } 
+    for(int i = 0; i < numeroDeCategorias; i++){
+        fprintf(arq, "%s;%d\n", categorias[i], numeroDeOcorrencias[i]);
+    }  
+    fclose(arq); 
 }
 // nome_do_ataque;numero_de_ocorrências
 
