@@ -7,6 +7,8 @@ typedef struct {
   char **categorias;
 } atributo;
 
+#define LINE_SIZE_ATRIBUTO 1024
+
 void exibe_atributos(atributo *infos, int quantidade);
 int conta_atributos(FILE *arff);
 void processa_categorias(atributo *elemento, char *categorias);

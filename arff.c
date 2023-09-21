@@ -4,8 +4,6 @@
 
 #include "arff.h"
 
-#define LINE_SIZE_ATRIBUTO 1024
-#define LINE_SIZE_DADOS 2048
 // Define um contador estático para o macro
 static unsigned int contadorDebug = 0;
 
@@ -35,6 +33,7 @@ void exibe_atributos(atributo *infos, int quantidade){
         j++;
       }
       j = 0;
+      printf("}\n");
     }
     if (i < quantidade-1) printf("------------------------------\n");
   }
@@ -44,15 +43,14 @@ void exibe_atributos(atributo *infos, int quantidade){
 int conta_atributos(FILE *arff){
   //Fun��o do A1
   char percorre[LINE_SIZE_ATRIBUTO+1];
-  char* atributoArq = "@attribute"; // para comparacao
-  char* token;
+  char* token = NULL; // mudança dia 21/09 esse null
   char separador[] = " "; // para separar os atributos/tipos
   int numAtributos = 0;
 
   while(!feof(arff)){
       fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
       token = strtok(percorre, separador);
-      if(strcmp(atributoArq, token) == 0){
+      if(strcmp("@attribute", token) == 0){
           numAtributos += 1;        
       }
       if(strcmp("@data\0", token) == 0 || strcmp("@data\n", token) == 0){
@@ -66,8 +64,9 @@ int conta_atributos(FILE *arff){
 void processa_categorias(atributo *elemento, char *categorias){
   //Recbe uma string com as categorias e atualiza o elemento com um vetor de strings (modificar a struct)
   //Eu : vou precisar percorrer a string inteira pra descobrir o número de categorias
-  char* token;
+  char* token = NULL;
   char* percorre = categorias;
+  unsigned int tamanhoFinal = 0; 
   int numCategorias = 1;
 
   token = strtok(percorre, ",");
@@ -84,6 +83,7 @@ void processa_categorias(atributo *elemento, char *categorias){
       token = strtok(NULL, ",");
       numCategorias++;
       elemento->categorias = realloc(elemento->categorias, sizeof(char*) * (numCategorias+1));
+      // elemento->categorias = malloc(sizeof(char*) * (numCategorias+1));
       if(!elemento->categorias){
         perror("Falha ao re-alocar memória para as categorias\n");
         exit(1);
@@ -92,6 +92,8 @@ void processa_categorias(atributo *elemento, char *categorias){
     }
     percorre++;
   }
+  tamanhoFinal = strlen(elemento->categorias[numCategorias-1]);
+  elemento->categorias[numCategorias-1][tamanhoFinal-2] = '\0'; // para remover o '\n' do final
   elemento->categorias[numCategorias] = NULL; // para indicar o final
 }
 
@@ -102,6 +104,7 @@ atributo* processa_atributos(FILE *arff, int quantidade){
     char percorreCopia[LINE_SIZE_ATRIBUTO+1];
     char separador[] = " "; // para separar os atributos/tipos
     char* token;
+    char* tokenCopia;
     int numAtributos = conta_atributos(arff);
     int i = 0;
     
@@ -127,16 +130,14 @@ atributo* processa_atributos(FILE *arff, int quantidade){
             token = strtok(NULL, separador);
             if((strcmp("numeric\n", token) == 0 )||(strcmp(token, "string\n") == 0)){
                 atributosArff[i].tipo = strdup(token);
-                if(!atributosArff[i].tipo){
-                    perror("falha ao alocar memória ao duplicar o token para o tipo\n");
-                    exit(1);
-                }
                 atributosArff[i].categorias = NULL;
             }else{
                 if(token[0] == '{'){ // assumindo que as categorias estao corretamente escritas
                   //categorias
-                  atributosArff[i].tipo = "categoric";
-                  processa_categorias(&atributosArff[i], strdup(token)); // soma para ignorar o @attribute e o rótulo    
+                  atributosArff[i].tipo = strdup("categoric");
+                  tokenCopia = strdup(token);
+                  processa_categorias(&atributosArff[i], tokenCopia); // soma para ignorar o @attribute e o rótulo    
+                  free(tokenCopia);
                 }else{
                   perror("Atributo inválido\n");
                   exit(1);
@@ -152,7 +153,6 @@ atributo* processa_atributos(FILE *arff, int quantidade){
             exit(1);
           }
         }
-        
     }
     return 0;
 }
@@ -166,10 +166,13 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade){
 void liberarMemoria(atributo* atributosArff, int numAtributos){
     unsigned int j = 0;
     for(int i = 0; i < numAtributos; i++){
+        printf("LIBERANDO: %s\n tipo: %s \n", atributosArff[i].rotulo, atributosArff[i].tipo);
         free(atributosArff[i].tipo);
         free(atributosArff[i].rotulo);
-        if(atributosArff[i].categorias){
+        if(atributosArff[i].categorias != NULL){
+          printf("TENTANDOR LIBERAR A CATEGORIA: %s\n", atributosArff[i].categorias[j]);
           while(atributosArff[i].categorias[j]){
+            printf("LIBERANDO A CATEGORIA: %s\n", atributosArff[i].categorias[j]);
             free(atributosArff[i].categorias[j]); // libera o j e incrementa pro próximo loop
             j++;
           }
