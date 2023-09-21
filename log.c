@@ -4,42 +4,14 @@
 
 #include "log.h"
 
-// char** pesquisaCategorias(atributo* arff, char charGuia, int numAtributos){
-//     switch(charGuia){
-//         case 'a':
-//             for(int i = 0; i < numAtributos; i++){
-//                 if(strcmp(arff[i].rotulo, "PKT_CLASS") == 0){
-//                     return arff[i].categorias;
-//                 }
-//             }
-//         break;
-//         case 'o':
-//             for(int i = 0; i < numAtributos; i++){
-//                 if(strcmp(arff[i].rotulo, "ORIGEM") == 0){
-//                     return arff[i].categorias;
-//                 }
-//             }
-//         break;
-//         case 'p':
-
-//         break;
-//     }
-
-// }
 char* coletaLinhaDeDados(FILE* arff){
     char percorre[LINE_SIZE_DADOS+1];
-    static unsigned int emDados = 0; 
-    
-    if(emDados == 0)
-        while(!feof(arff)){
-            fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
-            if(strcmp(percorre, "data\n") == 0){
-                emDados = 1;
-                break;
-            }
-        }
+  
+    fgets(percorre, LINE_SIZE_DADOS, arff);
+    printf("percorre:%s\n", percorre);
     while(percorre[0] == '\n'){
-        fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
+        printf("Looping 2 coletaLinhaDeDados\n");
+        fgets(percorre, LINE_SIZE_DADOS, arff);
     }
     return strdup(percorre);
 }
@@ -56,6 +28,7 @@ char** separarDados(char* linhaDados, int numAtributos){
 
     token = strtok(linhaDados, separador);
     while(token != NULL){
+        printf("Looping 1 separarDados\n");
         dados[i] = strdup(token);
         token = strtok(NULL, separador);
         i++;
@@ -65,6 +38,7 @@ char** separarDados(char* linhaDados, int numAtributos){
 
 unsigned int verificaPosicaoAtributo(atributo* listaDeAtributos, int numAtributos, char* atributo){
     for(unsigned int i = 0; i < numAtributos; i++){
+        printf("Looping 1 verificaPosicaoAtributo\n");
         if(strcmp(listaDeAtributos[i].rotulo, atributo) == 0){
             return i;
         }
@@ -78,6 +52,7 @@ unsigned int contaCategorias(char** categorias){
     unsigned int i = 0;
     char** copiaCategorias = categorias;
     while(copiaCategorias[i] != NULL){
+        printf("Looping 1 contaCategorias\n");
         i++;
     }
     return i;
@@ -96,7 +71,10 @@ void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
     unsigned int* numeroDeOcorrencias = NULL;
 
     posicaoAtributo = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
+    printf("posicaoAtributo:%d\n", posicaoAtributo);
+    printf("no vetor: %s\n", vetorAtributos[posicaoAtributo].rotulo);
     numeroDeCategorias = contaCategorias(vetorAtributos[posicaoAtributo].categorias);
+    printf("numeroDeCategorias:%d\n", numeroDeCategorias);
     copiaNumeroDeCategorias = numeroDeCategorias;
     numeroDeOcorrencias = malloc(sizeof(unsigned int)*numeroDeCategorias);
     if(!numeroDeOcorrencias){
@@ -105,12 +83,22 @@ void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
     }
     while(!feof(arff)){
         linhaDados = coletaLinhaDeDados(arff);
+        printf("linha de dados:%s\n", linhaDados);
         dados = separarDados(linhaDados, numAtributos);
+        printf("Looping 1 relatorioDeAtaque\n");
         while(copiaNumeroDeCategorias > 0){
+            printf("Looping 2 relatorioDeAtaque\n");
+            printf("dados:%s\n", dados[posicaoAtributo]);
             if(strcmp(dados[posicaoAtributo], vetorAtributos[posicaoAtributo].categorias[numeroDeCategorias-1]) == 0){
-                numeroDeOcorrencias[numeroDeCategorias-1]++;
-                break;
+                if(!strcmp(dados[posicaoAtributo], "Normal") == 0){
+                    numeroDeOcorrencias[numeroDeCategorias-1]++;
+                    break;
+                }else{
+                    break;
+                }
             }
+            posicaoAtributo++;
+            numeroDeCategorias--;
         }
         copiaNumeroDeCategorias = numeroDeCategorias;
     }
@@ -124,6 +112,7 @@ void gerarRelatorioDeAtaque(char** categorias, unsigned int* numeroDeOcorrencias
         exit(1);
     } 
     for(int i = 0; i < numeroDeCategorias; i++){
+        printf("Looping 1 gerarRelatorioDeAtaque\n");
         fprintf(arq, "%s;%d\n", categorias[i], numeroDeOcorrencias[i]);
     }  
     fclose(arq); 
