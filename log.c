@@ -4,6 +4,10 @@
 
 #include "log.h"
 
+void strtim(char *linha){
+    
+}
+
 char* coletaLinhaDeDados(FILE* arff){
     char percorre[LINE_SIZE_DADOS+1];
   
@@ -88,17 +92,19 @@ void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
         printf("Looping 1 relatorioDeAtaque\n");
         while(copiaNumeroDeCategorias > 0){
             printf("Looping 2 relatorioDeAtaque\n");
-            printf("dados:%s\n", dados[posicaoAtributo]);
-            if(strcmp(dados[posicaoAtributo], vetorAtributos[posicaoAtributo].categorias[numeroDeCategorias-1]) == 0){
-                if(!strcmp(dados[posicaoAtributo], "Normal") == 0){
-                    numeroDeOcorrencias[numeroDeCategorias-1]++;
+            printf("dados:%s", dados[posicaoAtributo]);
+            printf("categoria %s\n", vetorAtributos[posicaoAtributo].categorias[copiaNumeroDeCategorias-1]);
+            // essa comparação ta suspeita
+            if(strcmp(dados[posicaoAtributo], vetorAtributos[posicaoAtributo].categorias[copiaNumeroDeCategorias-1]) == 0){
+                if(!(strcmp(dados[posicaoAtributo], "Normal") == 0)){
+                    numeroDeOcorrencias[copiaNumeroDeCategorias-1]++;
+                    printf("numeroDeOcorrencias[%d]:%d\n", copiaNumeroDeCategorias-1, numeroDeOcorrencias[copiaNumeroDeCategorias-1]);
                     break;
                 }else{
                     break;
                 }
             }
-            posicaoAtributo++;
-            numeroDeCategorias--;
+            copiaNumeroDeCategorias--;
         }
         copiaNumeroDeCategorias = numeroDeCategorias;
     }
