@@ -1,5 +1,4 @@
-Normal;0
-UDP-Flood;0
-Smurf;0
+UDP-Flood;2
+Smurf;2
 SIDDOS;0
 HTTP-FLOOD;0

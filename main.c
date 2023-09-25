@@ -17,6 +17,7 @@ int main(int argc, char **argv){
   char tamanho = 0;
   char firewall = 0;
   char *entrada = 0;
+  long posicao = 0;
 
   while ((opt = getopt(argc, argv, "pvabcdi:")) != -1) {
     switch (opt) {
@@ -65,28 +66,37 @@ int main(int argc, char **argv){
     exit(4);
   }
   atributo *dados_atributos = processa_atributos(arquivo, qntd_atributos);
+  posicao = ftell(arquivo);
 
   if (exibicao){
     exibe_atributos(dados_atributos, qntd_atributos);
-    liberarMemoria(dados_atributos, qntd_atributos);
   }
   if (validacao){
     rewind(arquivo);
     valida_arff(arquivo, dados_atributos, qntd_atributos);
+    fseek(arquivo, posicao, SEEK_SET);
   }
   if (ataques){
     relatorioDeAtaque(arquivo, dados_atributos, qntd_atributos);
+    fseek(arquivo, posicao, SEEK_SET);
     //Chamar a função de relatórios de ataque;
   }
   if (entidades){
+    relatorioDeEntidades(arquivo, dados_atributos, qntd_atributos, 0);
+    fseek(arquivo, posicao, SEEK_SET);
     //Chamar a função de relatórios de entidade;
   }
   if (tamanho){
+    relatorioMedias(arquivo, dados_atributos, qntd_atributos);
+    fseek(arquivo, posicao, SEEK_SET);
     //Chamar a função de relatórios de tamanho;
   }
   if (firewall){
+    relatorioDeEntidades(arquivo, dados_atributos, qntd_atributos, 1);
+    fseek(arquivo, posicao, SEEK_SET);
     //Chamar a função de geração de arquivo de firewall.
   }
+  liberarMemoria(dados_atributos, qntd_atributos);
   free(entrada);
   fclose(arquivo);
   return 0 ;
