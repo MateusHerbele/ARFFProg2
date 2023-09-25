@@ -55,14 +55,18 @@ char** separarDados(char* linhaDados, int numAtributos){
 
     token = strtok(linhaDados, separador);
     while(token != NULL){
-        strtrim(token);
-        dados[i] = strdup(token);
-        if(!dados[i]){
-            perror("Falha ao alocar memória para os dados ao duplicar o token\n");
-            exit(1);
-        }
-        token = strtok(NULL, separador);
-        i++;
+      if(i >= numAtributos){
+        perror("Número de dados não confere com o número de atributos.\n");
+        exit(1);
+      }
+      strtrim(token);
+      dados[i] = strdup(token);
+      if(!dados[i]){
+          perror("Falha ao alocar memória para os dados ao duplicar o token\n");
+          exit(1);
+      }
+      token = strtok(NULL, separador);
+      i++;
     }
     if(i != numAtributos){
         printf("Erro na linha de dados: %s\n", linhaDados);
@@ -195,6 +199,10 @@ atributo* processa_atributos(FILE *arff, int quantidade){
     char* token;
     char* tokenCopia;
     int numAtributos = conta_atributos(arff);
+    if(numAtributos == 0){
+        perror("Arquivo inválido devido a não ter atributos.\n");
+        exit(1);
+    }
     int i = 0;
     
     atributosArff = malloc(sizeof(atributo) * numAtributos);
@@ -264,7 +272,26 @@ atributo* processa_atributos(FILE *arff, int quantidade){
     }
     return 0;
 }
-  
+
+int percorreAtributos(FILE *arff){
+  char percorre[LINE_SIZE_ATRIBUTO+1];
+  char* token = NULL; // mudança dia 21/09 esse null
+  char separador[] = " "; // para separar os atributos/tipos
+  int numAtributos = 0;
+
+  while(!feof(arff)){
+      fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
+      token = strtok(percorre, separador);
+      strtrim(token);
+      if(strcmp("@attribute", token) == 0){
+          numAtributos += 1;        
+      }
+      if(strcmp("@data", token) == 0){
+          return numAtributos;
+      }
+  }
+  return 0;
+}  
 void valida_arff(FILE *arff, atributo *atributos, int quantidade){
   //Recebe um arquivo arff com ponteiro de leitura antes do "@data"; passa por todas as linhas de dados e valida cada elementos de cada coluna em
   //rela��o ao vetor de atributos tamb�m fornecido como argumento.
@@ -276,7 +303,11 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade){
   char** dados = NULL;
   int numeroDeCategorias = 0;
   int j = 0;
-  conta_atributos(arff);
+  
+  if(percorreAtributos(arff) == 0){
+    perror("Arquivo inválido devido a invalidez da sessão de atributos.\n");
+    exit(1);
+  }
   // posData(arff);
   while(1){
     linhaDados = coletaLinhaDeDados(arff);

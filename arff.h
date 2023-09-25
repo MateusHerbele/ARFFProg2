@@ -18,6 +18,7 @@ unsigned int contaCategorias(char** categorias);
 void exibe_atributos(atributo *infos, int quantidade);
 int conta_atributos(FILE *arff);
 void processa_categorias(atributo *elemento, char *categorias);
+int percorreAtributos(FILE *arff);
 atributo* processa_atributos(FILE *arff, int quantidade);
 void valida_arff(FILE *arff, atributo *atributos, int quantidade);
 void liberarMemoria(atributo* atributosArff, int numAtributos);

@@ -1,4 +1,0 @@
-UDP-Flood;777
-Smurf;32795
-SIDDOS;0
-HTTP-FLOOD;0

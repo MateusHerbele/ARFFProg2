@@ -15,3 +15,7 @@ $(nomeDoPrograma): $(OBJ)
 
 clean:
 	rm -rf *.o
+purge:
+	rm -rf *.o $(nomeDoPrograma)	
+clean_relatorios:
+	rm -rf R_* BLACKLIST.bl
