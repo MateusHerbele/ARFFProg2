@@ -45,6 +45,7 @@ char* coletaLinhaDeDados(FILE* arff){
 char** separarDados(char* linhaDados, int numAtributos){
     char* token = NULL;
     char separador[] = ",";
+
     int i = 0;
     char** dados = (char**)malloc(sizeof(char*)*numAtributos);
     if(!dados){
@@ -64,6 +65,7 @@ char** separarDados(char* linhaDados, int numAtributos){
         i++;
     }
     if(i != numAtributos){
+        printf("Erro na linha de dados: %s\n", linhaDados);
         perror("Número de dados não confere com o número de atributos.\n");
         exit(1);
     }
@@ -77,7 +79,7 @@ unsigned int verificaPosicaoAtributo(atributo* listaDeAtributos, int numAtributo
         }
     }
     printf("Atributo %s não encontrado, fechando a execução\n", atributo);
-    perror("Atributo não encontrado na ao verificar a posição deste.\n");
+    perror("Atributo não encontrado ao verificar a posição deste.\n");
     exit(1);
 }
 
@@ -216,7 +218,7 @@ atributo* processa_atributos(FILE *arff, int quantidade){
             //tipo
             token = strtok(NULL, separador);
             if(!token){
-                printf("Linha com problema: %s\n", percorreCopia);
+                printf("Linha apresentando problema: %s\n", percorreCopia);
                 perror("Atributo inválido, faltando elementos da linha.\n");
                 exit(1);
             }
@@ -262,74 +264,58 @@ atributo* processa_atributos(FILE *arff, int quantidade){
     }
     return 0;
 }
-
-void posData(FILE* arff){
-  char percorre[LINE_SIZE_ATRIBUTO+1];
-  char* token = NULL; // mudança dia 21/09 esse null
-  char separador[] = " "; // para separar os atributos/tipos
-
-  while(!feof(arff)){
-      fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
-      token = strtok(percorre, separador);
-      strtrim(token);
-      if(strcmp("@data", token) == 0){
-          return;
-      }
-  }
-  perror("Arquivo inválido devido a não ter @data.\n");
-  exit(1);
-}
   
 void valida_arff(FILE *arff, atributo *atributos, int quantidade){
   //Recebe um arquivo arff com ponteiro de leitura antes do "@data"; passa por todas as linhas de dados e valida cada elementos de cada coluna em
   //rela��o ao vetor de atributos tamb�m fornecido como argumento.
-    if(quantidade == 0){
-      perror("Arquivo inválido devido a não ter atributos.\n");
-      exit(1);
+  if(quantidade == 0){
+    perror("Arquivo inválido devido a não ter atributos.\n");
+    exit(1);
+  }
+  char* linhaDados;
+  char** dados = NULL;
+  int numeroDeCategorias = 0;
+  int j = 0;
+  conta_atributos(arff);
+  // posData(arff);
+  while(1){
+    linhaDados = coletaLinhaDeDados(arff);
+    if(!linhaDados)
+        break; 
+    dados = separarDados(linhaDados, quantidade);
+    for(unsigned int i = 0; i < quantidade; i++){
+      if(strcmp(atributos[i].tipo, "numeric\n") == 0 && atol(dados[i]) == 0 && strcmp(dados[i], "0") != 0){
+        if(atof(dados[i]) == 0){ // se numeric for só inteiro, tirar isso aqui
+          printf("Arquivo inválido devido ao dado do atributo %s não ser numérico.\n", atributos[i].rotulo);
+          perror("Arquivo inválido devido a um valor não numérico.\n");
+          exit(1);
+        }
+      }else if(strcmp(atributos[i].tipo, "string\n") == 0 && dados[i] == NULL){
+        printf("Arquivo inválido devido ao dado do atributo %s não ser atribuído.\n", atributos[i].rotulo);
+        perror("Arquivo inválido devido a um valor nulo onde era esperado uam string.\n");
+        exit(1);
+    }else if(strcmp(atributos[i].tipo, "categoric") == 0){
+      numeroDeCategorias = contaCategorias(atributos[i].categorias);
+      while(numeroDeCategorias > 0){
+        if(strcmp(dados[i], atributos[i].categorias[j]) == 0){
+          break;
+        }
+        numeroDeCategorias--;
+        j++;
+      }
+      if(numeroDeCategorias == 0){
+        printf("Arquivo inválido devido ao dado do atributo %s não ser uma categoria válida.\n", atributos[i].rotulo);
+        perror("Arquivo inválido devido a um valor não ser uma categoria válida.\n");
+        exit(1);
+      }
+      j = 0;
     }
-    char* linhaDados;
-    char** dados = NULL;
-    int numeroDeCategorias = 0;
-    int j = 0;
-    posData(arff);
-    while(1){
-      linhaDados = coletaLinhaDeDados(arff);
-      if(!linhaDados)
-          break; 
-      dados = separarDados(linhaDados, quantidade);
-      for(unsigned int i = 0; i < quantidade; i++){
-        if(strcmp(atributos[i].tipo, "numeric\n") == 0 && atol(dados[i]) == 0 && strcmp(dados[i], "0") != 0){
-          if(atof(dados[i]) == 0){ // se numeric for só inteiro, tirar isso aqui
-            printf("Arquivo inválido devido ao dado do atributo %s não ser numérico.\n", atributos[i].rotulo);
-            perror("Arquivo inválido devido a um valor não numérico.\n");
-            exit(1);
-          }
-        }else if(strcmp(atributos[i].tipo, "string\n") == 0 && dados[i] == NULL){
-          printf("Arquivo inválido devido ao dado do atributo %s não ser atribuído.\n", atributos[i].rotulo);
-          perror("Arquivo inválido devido a um valor nulo onde era esperado uam string.\n");
-          exit(1);
-      }else if(strcmp(atributos[i].tipo, "categoric") == 0){
-        numeroDeCategorias = contaCategorias(atributos[i].categorias);
-        while(numeroDeCategorias > 0){
-          if(strcmp(dados[i], atributos[i].categorias[j]) == 0){
-            break;
-          }
-          numeroDeCategorias--;
-          j++;
-        }
-        if(numeroDeCategorias == 0){
-          printf("Arquivo inválido devido ao dado do atributo %s não ser uma categoria válida.\n", atributos[i].rotulo);
-          perror("Arquivo inválido devido a um valor não ser uma categoria válida.\n");
-          exit(1);
-        }
-        j = 0;
-      }
-    } 
-      for(int i = 0; i < quantidade; i++){
-        free(dados[i]);
-      }
-      free(dados);
-      free(linhaDados);
+  } 
+    for(int i = 0; i < quantidade; i++){
+      free(dados[i]);
+    }
+    free(dados);
+    free(linhaDados);
   }
 }
 // libera a memória alocada para os atributos e para o vetor

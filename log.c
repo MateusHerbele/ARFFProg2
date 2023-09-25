@@ -6,12 +6,9 @@
 
 // nome_do_ataque;numero_de_ocorrências
 void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
+    printf("Relatório de ataques\n");
     char** dados = NULL;
-    char* linhaDados = malloc(sizeof(char)*LINE_SIZE_DADOS+1);
-    if(!linhaDados){
-        perror("Falha ao alocar memória para a linha de dados\n");
-        exit(1);
-    }
+    char* linhaDados = NULL;
     unsigned int posicaoAtributo = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
     unsigned int numeroDeCategorias = contaCategorias(vetorAtributos[posicaoAtributo].categorias);
     unsigned int copiaNumeroDeCategorias = numeroDeCategorias;
@@ -62,12 +59,9 @@ void gerarRelatorioDeAtaque(char** categorias, unsigned int* numeroDeOcorrencias
 
 // endereço_origem;classificação
 void relatorioDeEntidades(FILE*arff, atributo* vetorAtributos, int numAtributos, int ehBlackList){
+    printf("Relatório de entidades\n");
     char** dados = NULL;
-    char* linhaDados = malloc(sizeof(char)*LINE_SIZE_DADOS+1);
-    if(!linhaDados){
-        perror("Falha ao alocar memória para a linha de dados\n");
-        exit(1);
-    }
+    char* linhaDados = NULL;
     entidades* vetorDeEntidades = NULL;
     unsigned int numeroDeEntidades = 0;
     unsigned int posicaoAtributoAtaques = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
@@ -82,9 +76,7 @@ void relatorioDeEntidades(FILE*arff, atributo* vetorAtributos, int numAtributos,
         if(!linhaDados)
             break; 
         dados = separarDados(linhaDados, numAtributos);
-        printf("Teste pré confereEntidades\n");
         posicaoEntidade = confereEntidades(&vetorDeEntidades, &numeroDeEntidades, dados[posicaoAtributoEnderecoOrigem]);
-        printf("numero de entidades no relatorio de entidades: %d\n", numeroDeEntidades);
         while(copiaNumeroDeCategorias > 0){
             if(strcmp(dados[posicaoAtributoAtaques], vetorAtributos[posicaoAtributoAtaques].categorias[copiaNumeroDeCategorias-1]) == 0){
                 if(!(strcmp(dados[posicaoAtributoAtaques], "Normal") == 0)){
@@ -117,26 +109,20 @@ void relatorioDeEntidades(FILE*arff, atributo* vetorAtributos, int numAtributos,
 unsigned int confereEntidades(entidades** vetorDeEntidades, unsigned int* numeroDeEntidades, char* enderecoOrigem){
     if(*numeroDeEntidades == 0){
         (*numeroDeEntidades)++;
-        printf("numero de entidades: %d\n", *numeroDeEntidades);
         *vetorDeEntidades = malloc(sizeof(entidades) * *numeroDeEntidades);
         if(!vetorDeEntidades){
             perror("Falha ao alocar memória para a lista de entidades\n");
             exit(1);
         }
         (*vetorDeEntidades)[*numeroDeEntidades-1].ipParcial = strdup(enderecoOrigem);
-        printf("%d\n", *numeroDeEntidades-1);
-        printf("Teste pós strdup %s\n", (*vetorDeEntidades)[*numeroDeEntidades-1].ipParcial);
         (*vetorDeEntidades)[*numeroDeEntidades-1].ocorrenciasMaliciosas = 0;
         return *numeroDeEntidades-1;
     }
     for(unsigned int i = 0; i < *numeroDeEntidades; i++){
-        printf("Teste dentro do for\n");
-        printf("parcial ip for%s\n", (*vetorDeEntidades)[i].ipParcial);
         if(strcmp((*vetorDeEntidades)[i].ipParcial, enderecoOrigem) == 0){
             return i;
         }
     }
-    printf("Teste fora do for\n");
     (*numeroDeEntidades)++;
     *vetorDeEntidades = realloc(*vetorDeEntidades, sizeof(entidades) * *numeroDeEntidades);
     if(!vetorDeEntidades){
@@ -167,12 +153,9 @@ void gerarRelatorioDeEntidades(entidades* vetorDeEntidades, unsigned int numeroD
 
 // nome_do_ataque; media_media_do_tamanho
 void relatorioMedias(FILE*arff, atributo* vetorAtributos, int numAtributos){
+    printf("Relatório de médias\n");
     char** dados = NULL;
-    char* linhaDados = malloc(sizeof(char)*LINE_SIZE_DADOS+1);
-    if(!linhaDados){
-        perror("Falha ao alocar memória para a linha de dados\n");
-        exit(1);
-    }
+    char* linhaDados = NULL;
     unsigned int posicaoAtributoAtaques = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
     unsigned int numeroDeCategorias = contaCategorias(vetorAtributos[posicaoAtributoAtaques].categorias);
     unsigned int posicaoAtributoMedia = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_AVG_SIZE");
@@ -234,6 +217,7 @@ void gerarRelatorioDeMedias(char** categorias, int* somaDasMedias, unsigned int*
 }
 // endereço_origem
 void gerarBlackList(entidades* vetorDeEntidades, unsigned int numeroDeEntidades){
+    printf("Gerando BlackList\n");
     FILE* arq = fopen("BLACKLIST.bl", "w");
     if(!arq){
         perror("Falha ao abrir o arquivo de relatório de entidades\n");

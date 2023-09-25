@@ -19,7 +19,6 @@ void exibe_atributos(atributo *infos, int quantidade);
 int conta_atributos(FILE *arff);
 void processa_categorias(atributo *elemento, char *categorias);
 atributo* processa_atributos(FILE *arff, int quantidade);
-void posData(FILE* arff);
 void valida_arff(FILE *arff, atributo *atributos, int quantidade);
 void liberarMemoria(atributo* atributosArff, int numAtributos);
 
