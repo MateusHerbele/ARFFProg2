@@ -215,6 +215,11 @@ atributo* processa_atributos(FILE *arff, int quantidade){
             }
             //tipo
             token = strtok(NULL, separador);
+            if(!token){
+                printf("Linha com problema: %s\n", percorreCopia);
+                perror("Atributo inválido, faltando elementos da linha.\n");
+                exit(1);
+            }
             if((strcmp("numeric\n", token) == 0 )||(strcmp(token, "string\n") == 0)){
                 atributosArff[i].tipo = strdup(token);
                 if(!atributosArff[i].tipo){
@@ -245,7 +250,8 @@ atributo* processa_atributos(FILE *arff, int quantidade){
             }
             i++;
         }else{
-          if(strcmp("@data\0", token) == 0 || strcmp("@data\n", token) == 0)
+          strtrim(token);
+          if(strcmp("@data", token) == 0)
             return atributosArff;
           else 
           if(percorre[0] != '\n'){
