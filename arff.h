@@ -7,8 +7,8 @@ typedef struct {
   char **categorias;
 } atributo;
 
-#define LINE_SIZE_ATRIBUTO 1024
-#define LINE_SIZE_DADOS 2048
+#define TAM_LIN_ATR 1024
+#define TAM_LIN_DADOS 2048
 
 void strtrim(char *linha);
 char* coletaLinhaDeDados(FILE* arff);

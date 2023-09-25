@@ -6,7 +6,6 @@
 
 // nome_do_ataque;numero_de_ocorrências
 void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
-    printf("Relatório de ataques\n");
     char** dados = NULL;
     char* linhaDados = NULL;
     unsigned int posicaoAtributo = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
@@ -59,7 +58,6 @@ void gerarRelatorioDeAtaque(char** categorias, unsigned int* numeroDeOcorrencias
 
 // endereço_origem;classificação
 void relatorioDeEntidades(FILE*arff, atributo* vetorAtributos, int numAtributos, int ehBlackList){
-    printf("Relatório de entidades\n");
     char** dados = NULL;
     char* linhaDados = NULL;
     entidades* vetorDeEntidades = NULL;
@@ -153,7 +151,6 @@ void gerarRelatorioDeEntidades(entidades* vetorDeEntidades, unsigned int numeroD
 
 // nome_do_ataque; media_media_do_tamanho
 void relatorioMedias(FILE*arff, atributo* vetorAtributos, int numAtributos){
-    printf("Relatório de médias\n");
     char** dados = NULL;
     char* linhaDados = NULL;
     unsigned int posicaoAtributoAtaques = verificaPosicaoAtributo(vetorAtributos, numAtributos, "PKT_CLASS");
@@ -217,7 +214,6 @@ void gerarRelatorioDeMedias(char** categorias, int* somaDasMedias, unsigned int*
 }
 // endereço_origem
 void gerarBlackList(entidades* vetorDeEntidades, unsigned int numeroDeEntidades){
-    printf("Gerando BlackList\n");
     FILE* arq = fopen("BLACKLIST.bl", "w");
     if(!arq){
         perror("Falha ao abrir o arquivo de relatório de entidades\n");

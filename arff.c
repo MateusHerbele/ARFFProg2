@@ -29,9 +29,9 @@ void strtrim(char *linha){
 }
             
 char* coletaLinhaDeDados(FILE* arff){
-    char percorre[LINE_SIZE_DADOS+1];
+    char percorre[TAM_LIN_DADOS+1];
   
-   if(fgets(percorre, LINE_SIZE_DADOS, arff) == NULL){
+   if(fgets(percorre, TAM_LIN_DADOS, arff) == NULL){
         return NULL;
     }
     
@@ -56,7 +56,8 @@ char** separarDados(char* linhaDados, int numAtributos){
     token = strtok(linhaDados, separador);
     while(token != NULL){
       if(i >= numAtributos){
-        perror("Número de dados não confere com o número de atributos.\n");
+        printf("Erro na linha de dados: %s\n", linhaDados);
+        perror("Número de dados (maior) não confere com o número de atributos.\n");
         exit(1);
       }
       strtrim(token);
@@ -70,7 +71,7 @@ char** separarDados(char* linhaDados, int numAtributos){
     }
     if(i != numAtributos){
         printf("Erro na linha de dados: %s\n", linhaDados);
-        perror("Número de dados não confere com o número de atributos.\n");
+        perror("Número de dados (menor) não confere com o número de atributos.\n");
         exit(1);
     }
     return dados;
@@ -126,13 +127,13 @@ void exibe_atributos(atributo *infos, int quantidade){
 
 int conta_atributos(FILE *arff){
   //Fun��o do A1
-  char percorre[LINE_SIZE_ATRIBUTO+1];
+  char percorre[TAM_LIN_ATR+1];
   char* token = NULL; // mudança dia 21/09 esse null
   char separador[] = " "; // para separar os atributos/tipos
   int numAtributos = 0;
 
   while(!feof(arff)){
-      fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
+      fgets(percorre, TAM_LIN_ATR, arff);
       token = strtok(percorre, separador);
       strtrim(token);
       if(strcmp("@attribute", token) == 0){
@@ -193,8 +194,8 @@ void processa_categorias(atributo *elemento, char *categorias){
 atributo* processa_atributos(FILE *arff, int quantidade){
   //Fun��o do A1 (com modifica��es para o atributo de categorias)
     atributo* atributosArff;
-    char percorre[LINE_SIZE_ATRIBUTO+1];
-    char percorreCopia[LINE_SIZE_ATRIBUTO+1];
+    char percorre[TAM_LIN_ATR+1];
+    char percorreCopia[TAM_LIN_ATR+1];
     char separador[] = " "; // para separar os atributos/tipos
     char* token;
     char* tokenCopia;
@@ -212,7 +213,7 @@ atributo* processa_atributos(FILE *arff, int quantidade){
     }
 
     while(!feof(arff)){
-        fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
+        fgets(percorre, TAM_LIN_ATR, arff);
         strcpy(percorreCopia, percorre);
         token = strtok(percorre, separador);
         if(strcmp("@attribute", token) == 0){
@@ -274,13 +275,13 @@ atributo* processa_atributos(FILE *arff, int quantidade){
 }
 
 int percorreAtributos(FILE *arff){
-  char percorre[LINE_SIZE_ATRIBUTO+1];
+  char percorre[TAM_LIN_ATR+1];
   char* token = NULL; // mudança dia 21/09 esse null
   char separador[] = " "; // para separar os atributos/tipos
   int numAtributos = 0;
 
   while(!feof(arff)){
-      fgets(percorre, LINE_SIZE_ATRIBUTO, arff);
+      fgets(percorre, TAM_LIN_ATR, arff);
       token = strtok(percorre, separador);
       strtrim(token);
       if(strcmp("@attribute", token) == 0){
