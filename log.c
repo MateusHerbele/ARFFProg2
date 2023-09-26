@@ -13,7 +13,7 @@ void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos){
     unsigned int copiaNumeroDeCategorias = numeroDeCategorias;
     unsigned int* numeroDeOcorrencias = calloc(sizeof(unsigned int), numeroDeCategorias);
     if(!numeroDeOcorrencias){
-        perror("Falha ao alocar memória para o vetor de número de ocorrências\n");
+        fprintf(stderr, "Falha ao alocar memória para o vetor de número de ocorrências\n");
         exit(1);
     }
     while(1){
@@ -109,7 +109,7 @@ unsigned int confereEntidades(entidades** vetorDeEntidades, unsigned int* numero
         (*numeroDeEntidades)++;
         *vetorDeEntidades = malloc(sizeof(entidades) * *numeroDeEntidades);
         if(!vetorDeEntidades){
-            perror("Falha ao alocar memória para a lista de entidades\n");
+            fprintf(stderr, "Falha ao alocar memória para a lista de entidades\n");
             exit(1);
         }
         (*vetorDeEntidades)[*numeroDeEntidades-1].ipParcial = strdup(enderecoOrigem);
@@ -124,7 +124,7 @@ unsigned int confereEntidades(entidades** vetorDeEntidades, unsigned int* numero
     (*numeroDeEntidades)++;
     *vetorDeEntidades = realloc(*vetorDeEntidades, sizeof(entidades) * *numeroDeEntidades);
     if(!vetorDeEntidades){
-        perror("Falha ao realocar memória para a lista de entidades\n");
+        fprintf(stderr, "Falha ao realocar memória para a lista de entidades\n");
         exit(1);
     }
     (*vetorDeEntidades)[*numeroDeEntidades-1].ipParcial = strdup(enderecoOrigem);
@@ -159,12 +159,12 @@ void relatorioMedias(FILE*arff, atributo* vetorAtributos, int numAtributos){
     unsigned int copiaNumeroDeCategorias = numeroDeCategorias;
     int* mediaMediaAtaques = calloc(sizeof(unsigned int), numeroDeCategorias);
     if(!mediaMediaAtaques){
-        perror("Falha ao alocar memória para o vetor de média de média de ataques\n");
+        fprintf(stderr, "Falha ao alocar memória para o vetor de média de média de ataques\n");
         exit(1);
     }
     unsigned int* numeroDeOcorrencias = calloc(sizeof(unsigned int), numeroDeCategorias);
     if(!numeroDeOcorrencias){
-        perror("Falha ao alocar memória para o vetor de número de ocorrências\n");
+        fprintf(stderr, "Falha ao alocar memória para o vetor de número de ocorrências\n");
         exit(1);
     }
     while(1){

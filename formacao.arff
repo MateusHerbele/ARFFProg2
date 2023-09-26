@@ -1,5 +1,0 @@
-@attribute Nome string
-@attribute Idade numeric
-
-@attribute Grau {BC,MC,Bacharel,Mestre,Doutor}
-@data

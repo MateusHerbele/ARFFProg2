@@ -3,10 +3,10 @@
 
 #include "arff.h"
 
-typedef struct {
+typedef struct{
   char* ipParcial;
   unsigned int ocorrenciasMaliciosas;
-} entidades;
+}entidades;
 
 void relatorioDeAtaque(FILE*arff, atributo* vetorAtributos, int numAtributos);
 void gerarRelatorioDeAtaque(char** categorias, unsigned int* numeroDeOcorrencias, unsigned int numeroDeCategorias);

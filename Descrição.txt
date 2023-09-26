@@ -1,0 +1,41 @@
+-- T1: TESTES COM ARQUIVOS BEM FORMADOS (DETERMINA O MÍNIMO DE FUNCIONALIDADE)
+.\A1.exe -i .\car-T1.arff -p
+.\A1.exe -i .\iris-T1.arff -p
+.\A1.exe -i .\netlog-T1.arff -p
+(20 pontos)
+
+-- T2: TESTE COM ARQUIVO BEM FORMADO COM ESPAÇOS EM BRANCO ENTRE ATRIBUTOS
+.\A1.exe -i .\formacao-T2.arff -p
+(5 pontos)
+
+-- T3: TESTE COM ARQUIVO MAL FORMADO (TOKEN @attribute INCORRETO)
+.\A1.exe -i .\formacao-T3.arff -p
+(10 pontos)
+
+-- T4: TESTE COM ARQUIVO MAL FORMADO (ARGUMENTO FALTANTE NO TOKEN @attribute)
+.\A1.exe -i .\formacao-T4.arff -p
+(10 pontos)
+
+-- T5: TESTE COM ARQUIVO MAL FORMADO (UM ARGUMENTO EXTRA NO TOKEN @attribute)
+.\A1.exe -i .\formacao-T5.arff -p
+(10 pontos)
+
+-- T6: TESTE COM ARQUIVO MAL FORMADO (TOKEN @data INEXISTENTE)
+.\A1.exe -i .\formacao-T6.arff -p
+(10 pontos)
+
+-- INEX: TESTE COM ARQUIVO MAL FORMADO (TRATAMENTO DE ARQUIVO INEXISTENTE)
+.\A1.exe -i .\formacao-INEX.arff -p
+(5 pontos)
+
+==> PARA OS CÓDIGOS QUE COMPILARAM E PASSARAM NO T1
+
+-- COMPILAÇÃO SEM WARNINGS RELEVANTES (5 pontos)
+
+-- AUSÊNCIA DE LEAKS RELEVANTES (10 pontos)
+
+-- BOA FORMATAÇÃO PARA A APRESENTAÇÃO DOS RESULTADOS (5 pontos)
+
+-- OBSERVAÇÃO DAS PREMISSAS EM CÓDIGO (TAMANHO DE BUFFER, TOKENIZAÇÃO, ETC...) (5 pontos)
+
+-- ORGANIZAÇÃO DE CÓDIGO QUANTO A LEGIBILIDADE E MANUTENABILIDADE (5 pontos)
