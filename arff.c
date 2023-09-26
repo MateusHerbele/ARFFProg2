@@ -167,6 +167,10 @@ void processa_categorias(atributo *elemento, char *categorias){
 		exit(1);
 	}
 	while(*percorre != '}'){
+		if(*percorre == '\n'){
+			fprintf(stderr, "Arquivo inválido devido a uma categoria não ser fechada.\n");
+			exit(1);
+		}
 		if(*percorre == ',' || *(percorre+1) == '}'){
 		token = strtok(NULL, ",");
 		numCategorias++;
