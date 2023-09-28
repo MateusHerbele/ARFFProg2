@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall
-
+ 
 SRC = main.c arff.c log.c
 OBJ = $(SRC:.c=.o)
 

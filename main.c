@@ -28,7 +28,7 @@ int main(int argc, char **argv){
       exibicao = 1;
       break;
     case 'v':
-      validacao = 1;
+      validacao = 1; 
       break;
     case 'a': //Relatório de todos os ataques ocorridos e o número de ocorrências no dataset (nome do arquivo de saída: R_ATAQUES.txt)
       ataques = 1;
@@ -66,7 +66,7 @@ int main(int argc, char **argv){
     exit(4);
   }
   atributo *dados_atributos = processa_atributos(arquivo, qntd_atributos);
-  posicao = ftell(arquivo);
+  posicao = ftell(arquivo); // salva a posição atual do arquivo
 
   if (exibicao){
     exibe_atributos(dados_atributos, qntd_atributos);
@@ -74,11 +74,11 @@ int main(int argc, char **argv){
   if (validacao){
     rewind(arquivo);
     valida_arff(arquivo, dados_atributos, qntd_atributos);
-    fseek(arquivo, posicao, SEEK_SET);
+    fseek(arquivo, posicao, SEEK_SET); // retorna para a posição salva
   }
   if (ataques){
     relatorioDeAtaque(arquivo, dados_atributos, qntd_atributos);
-    fseek(arquivo, posicao, SEEK_SET);
+    fseek(arquivo, posicao, SEEK_SET); // retorna para a posição salva
     //Chamar a função de relatórios de ataque;
   }
   if (entidades){
@@ -88,15 +88,14 @@ int main(int argc, char **argv){
   }
   if (tamanho){
     relatorioMedias(arquivo, dados_atributos, qntd_atributos);
-    fseek(arquivo, posicao, SEEK_SET);
+    fseek(arquivo, posicao, SEEK_SET); // retorna para a posição salva
     //Chamar a função de relatórios de tamanho;
   }
   if (firewall){
     relatorioDeEntidades(arquivo, dados_atributos, qntd_atributos, 1);
-    fseek(arquivo, posicao, SEEK_SET);
     //Chamar a função de geração de arquivo de firewall.
   }
-  liberarMemoria(dados_atributos, qntd_atributos);
+  liberarMemoria(dados_atributos, qntd_atributos); 
   free(entrada);
   fclose(arquivo);
   return 0 ;
